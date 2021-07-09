@@ -3,13 +3,12 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:unbounded/config/game_config.dart';
 import 'package:unbounded/logic/direction.dart';
-import 'package:unbounded/logic/snake.dart';
 import 'package:unbounded/logic/snake_node.dart';
 import 'package:unbounded/mixins/query_mixin.dart';
-import 'package:unbounded/rendering/backgrounds/rounded_background.dart';
+import 'package:unbounded/modules/game_modes/standard/models/standard_snake.dart';
+import 'package:unbounded/rendering/backgrounds/classic_theme.dart';
 import 'package:unbounded/rendering/snake_game_painter.dart';
 import 'package:vector_math/vector_math.dart' hide Colors;
 
@@ -31,8 +30,8 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
 
   Direction? _nextDirection;
 
-  late Grid _grid;
-  late Snake _snake;
+  late GameBoard _grid;
+  late StandardSnake _snake;
   late Animation<double> _animation;
   late AnimationController _controller;
 
@@ -41,7 +40,23 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
   void _setSnakeDirection(Direction newDirection) {
     _setSnakeStatus(freeze: false);
 
+    if (!_canMoveTo(_snake.direction, newDirection)) return;
+
     _nextDirection = newDirection;
+  }
+
+  bool _canMoveTo(Direction currentDirection, Direction newDirection) {
+    final leftOrRight = <Direction>{Direction.left, Direction.right};
+    final upOrDown = <Direction>{Direction.up, Direction.down};
+
+    final validMoves = <Direction, Set<Direction>>{
+      Direction.up: leftOrRight,
+      Direction.down: leftOrRight,
+      Direction.left: upOrDown,
+      Direction.right: upOrDown,
+    };
+
+    return validMoves[currentDirection]!.contains(newDirection);
   }
 
   void _setSnakeStatus({required bool freeze}) {
@@ -77,7 +92,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
   }
 
   void _initGrid() {
-    _grid = Grid(
+    _grid = GameBoard(
       width: deviceWidth,
       height: deviceHeight,
       columnsCount: 15,
@@ -107,7 +122,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
       ),
     );
 
-    _snake = Snake(nodes: nodes);
+    _snake = Snake(id: 'player-1', nodes: nodes);
   }
 
   void _initController() {
@@ -144,7 +159,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
           xCount: _grid.columnsCount,
           yCount: _grid.rowsCount,
           offset: _grid.offset,
-          paintBackground: paintRoundedBackground,
+          paintBackground: classicTheme,
           backgroundColor:
               HSLColor.fromColor(Colors.red).withLightness(0.2).toColor(),
         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:vector_math/vector_math.dart';
 
-class Grid {
+class GameBoard {
   final double width;
   final double height;
 
@@ -16,7 +16,7 @@ class Grid {
   final double threshold;
   final EdgeInsets padding;
 
-  const Grid({
+  const GameBoard({
     required this.width,
     required this.height,
     required this.columnsCount,

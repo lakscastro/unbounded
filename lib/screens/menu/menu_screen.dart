@@ -22,7 +22,7 @@ class _MenuScreenState extends State<MenuScreen> with ThemeMixin {
         children: [
           Expanded(
             child: SnakeGameScreen(
-              config: GameConfig(velocity: 10),
+              config: GameConfig(velocity: 5),
             ),
           ),
         ],

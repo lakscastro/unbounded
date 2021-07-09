@@ -43,9 +43,7 @@ class SnakeGamePainter extends CustomPainter {
       color: backgroundColor,
     );
 
-    final paint = Paint()..color = Colors.red;
-
-    final path = <Offset>[];
+    final paint = Paint()..color = Colors.greenAccent;
 
     Direction? _compareNodes(SnakeNode current, SnakeNode adjacent) {
       final isRightToLeft = current.base.x < adjacent.base.x;

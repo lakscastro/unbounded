@@ -1,10 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:test/test.dart';
 import 'package:unbounded/logic/grid.dart';
 
 void main() {
   group('A. Square Grid', () {
-    final grid = Grid(width: 10, height: 10, columnsCount: 5);
+    final grid = GameBoard(width: 10, height: 10, columnsCount: 5);
 
     test('1. Compute properties correctly', () {
       expect(grid.spacing, equals(2));
@@ -29,7 +30,7 @@ void main() {
   });
 
   group('B. Rectangular Grid', () {
-    final grid = Grid(width: 10, height: 20, columnsCount: 5);
+    final grid = GameBoard(width: 10, height: 20, columnsCount: 5);
 
     test('1. Compute properties correctly', () {
       expect(grid.spacing, equals(2));
