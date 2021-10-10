@@ -1,77 +1,88 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
-class Background extends StatefulWidget {
+class DottedBackground extends StatefulWidget {
   final Widget? child;
   final Color color;
+  final double? size;
+  final double? spacing;
 
-  const Background({
+  const DottedBackground({
     Key? key,
     this.child,
     required this.color,
+    this.size,
+    this.spacing,
   }) : super(key: key);
 
   @override
-  _BackgroundState createState() => _BackgroundState();
+  _DottedBackgroundState createState() => _DottedBackgroundState();
 }
 
-class _BackgroundState extends State<Background> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class _DottedBackgroundState extends State<DottedBackground> {
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: const DottedBackground(10, 10),
-      child: widget.child,
+    return RepaintBoundary(
+      child: CustomPaint(
+        painter: DottedBackgroundPainter(
+          color: widget.color,
+          size: widget.size,
+          spacing: widget.spacing,
+        ),
+        isComplex: false,
+        child: widget.child,
+        willChange: false,
+      ),
     );
   }
 }
 
-class DottedBackground extends CustomPainter {
-  final double xCount;
-  final double yCount;
+class DottedBackgroundPainter extends CustomPainter {
+  final Color color;
+  final double? size;
+  final double? spacing;
 
-  const DottedBackground(this.xCount, this.yCount);
+  const DottedBackgroundPainter({
+    required this.color,
+    required this.size,
+    required this.spacing,
+  });
+
+  double get _size => size ?? 5.0;
+
+  double get _spacing => 1 - (spacing ?? 0.85);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final xSize = size.width / xCount;
-    final ySize = size.height / yCount;
+    assert(_spacing >= 0.0 && _spacing <= 1.0);
 
-    final paint = Paint()..color = Colors.red;
-    final dotPaint = Paint()..color = Colors.blue;
+    final paint = Paint()..color = color;
 
-    while()
+    final xCount = size.width ~/ _size + 1;
+    final yCount = size.height ~/ _size + 1;
 
-    for (var i = 0.0; i < xCount; i++) {
-      for (var j = 0.0; j < yCount; j++) {
-        final x = i * xSize;
-        final y = j * ySize;
+    final overflowX = size.width - xCount * _size;
+    final overflowY = size.height - yCount * _size;
 
-        canvas.drawRect(
-          Rect.fromLTWH(x, y, xSize, ySize),
-          paint,
+    log('Repaint');
+
+    for (var i = 0; i < xCount; i++) {
+      for (var j = 0; j < yCount; j++) {
+        final x = i * _size + overflowX / 2;
+        final y = j * _size + overflowY / 2;
+
+        final center = Rect.fromCenter(
+          center: Offset(x + _size / 2, y + _size / 2),
+          width: _size * _spacing,
+          height: _size * _spacing,
         );
 
-        final padding = xSize / 4;
-
-        canvas.drawRect(
-          Rect.fromLTWH(
-            x + padding,
-            y + padding,
-            xSize - padding * 2,
-            ySize - padding * 2,
-          ),
-          dotPaint,
-        );
+        canvas.drawRect(center, paint);
       }
     }
   }
 
   @override
-  bool shouldRepaint(DottedBackground oldDelegate) {
-    return false;
-  }
+  bool shouldRepaint(DottedBackgroundPainter oldDelegate) => false;
 }
